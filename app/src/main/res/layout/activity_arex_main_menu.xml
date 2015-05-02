@@ -7,6 +7,17 @@
     tools:context="com.qtrandev.arex.ArexMainMenuActivity" >
 
     <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:id="@+id/textView" />
+
+    <com.facebook.share.widget.ShareButton
+        android:id="@+id/share_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:layout_gravity="center"
+        android:layout_below="@+id/textView"
+        android:onClick="shareClick"/>
+
 
 </RelativeLayout>
