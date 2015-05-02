@@ -7,5 +7,7 @@
     <string name="facebook_app_id">870248279704331</string>
     <string name="title_activity_arex_main_menu">ArexMainMenuActivity</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="regular_button">Messenger</string>
+
 
 </resources>

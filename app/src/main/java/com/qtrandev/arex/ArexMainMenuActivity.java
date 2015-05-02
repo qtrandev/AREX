@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -17,6 +18,8 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookGraphResponseException;
 import com.facebook.login.DefaultAudience;
 import com.facebook.login.LoginManager;
+import com.facebook.messenger.MessengerUtils;
+import com.facebook.messenger.ShareToMessengerParams;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareButton;
@@ -27,11 +30,12 @@ import java.util.Arrays;
 
 public class ArexMainMenuActivity extends ActionBarActivity {
     private ShareButton shareButton;
+    private Button mRegularButton;
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private ShareDialog shareDialog;
 
-
+    private static final int REQUEST_CODE_SHARE_TO_MESSENGER = 1;
 
     private FacebookCallback<Sharer.Result> shareCallback =
             new FacebookCallback<Sharer.Result>() {
@@ -75,6 +79,7 @@ public class ArexMainMenuActivity extends ActionBarActivity {
 
         callbackManager = CallbackManager.Factory.create();
 
+        //mRegularButton = (Button) findViewById(R.id.regularButton);
         shareButton = (ShareButton)findViewById(R.id.share_button);
         shareDialog = new ShareDialog(this);
         // this part is optional
@@ -89,6 +94,20 @@ public class ArexMainMenuActivity extends ActionBarActivity {
         };
     }
 
+    public void messengerClick(View view) {
+        Uri uri =Uri.parse("android.resource://com.qtrandev.arex/" + R.drawable.tree);
+        // contentUri points to the content being shared to Messenger
+        ShareToMessengerParams shareToMessengerParams =
+                ShareToMessengerParams.newBuilder(uri, "image/jpeg")
+                        .setMetaData("{ \"image\" : \"tree\" }")
+                        .build();
+
+        // Sharing from an Activity
+        MessengerUtils.shareToMessenger(
+                this,
+                REQUEST_CODE_SHARE_TO_MESSENGER,
+                shareToMessengerParams);
+    }
 
 
     private void updateWithToken(AccessToken currentAccessToken) {
