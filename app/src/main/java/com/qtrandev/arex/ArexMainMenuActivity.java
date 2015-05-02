@@ -3,6 +3,8 @@ package com.qtrandev.arex;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +27,11 @@ import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareButton;
 import com.facebook.share.widget.ShareDialog;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 
 public class ArexMainMenuActivity extends ActionBarActivity {
@@ -34,8 +40,14 @@ public class ArexMainMenuActivity extends ActionBarActivity {
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
     private ShareDialog shareDialog;
+    private String mCurrentPhotoPath;
+    private boolean takingPhoto = false;
+    File photoFile=null;
 
     private static final int REQUEST_CODE_SHARE_TO_MESSENGER = 1;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_TAKE_PHOTO = 1;
+
 
     private FacebookCallback<Sharer.Result> shareCallback =
             new FacebookCallback<Sharer.Result>() {
@@ -69,7 +81,88 @@ public class ArexMainMenuActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+        if (takingPhoto) {
+            processPhotoData(data);//Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+            takingPhoto = false;
+        } else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+    /*
+    public void dispatchTakePictureIntent(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+    */
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
+    }
+
+    public void dispatchTakePictureIntent(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+
+            photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                takingPhoto = true;
+                //takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        //Uri.fromFile(photoFile));
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    private void processPhotoData(Intent data) {
+        Uri cameraPhotoUri = Uri.fromFile(photoFile);
+
+
+        // contentUri points to the content being shared to Messenger
+        ShareToMessengerParams shareToMessengerParams =
+                ShareToMessengerParams.newBuilder(cameraPhotoUri, "image/jpeg").build();
+
+        //.setMetaData("{ \"image\" : \"camera_photo\" }")
+
+
+
+        // Sharing from an Activity
+        MessengerUtils.shareToMessenger(
+                this,
+                REQUEST_CODE_SHARE_TO_MESSENGER,
+                shareToMessengerParams);
+    }
+
+    //Save to internal storage
+    //figure out how to integrate
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
     }
 
     @Override
