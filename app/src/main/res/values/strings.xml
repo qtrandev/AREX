@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AREX</string>
+    <string name="hello_world">Welcome to AREX!</string>
+    <string name="action_settings">Settings</string>
+</resources>
