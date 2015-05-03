@@ -27,6 +27,8 @@ import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.ShareButton;
 import com.facebook.share.widget.ShareDialog;
 
@@ -44,6 +46,7 @@ public class ArexMainMenuActivity extends ActionBarActivity {
     private ShareDialog shareDialog;
     private String mCurrentPhotoPath;
     private boolean takingPhoto = false;
+    private boolean takingPhotoForWall = false;
     private File photoFile=null;
     static final int CAMERA_PIC_REQUEST = 1;
     private static final int REQUEST_CODE_SHARE_TO_MESSENGER = 1;
@@ -96,6 +99,11 @@ public class ArexMainMenuActivity extends ActionBarActivity {
             this.takingPhoto=false;
             processPhotoDataForMessenger(photo);
         }
+        else if(takingPhotoForWall){
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            this.takingPhotoForWall=false;
+            processPhotoDataForWallPost(photo);
+        }
         else
         {
             super.onActivityResult(requestCode, resultCode, data);
@@ -114,27 +122,33 @@ public class ArexMainMenuActivity extends ActionBarActivity {
         }
     }
 
-/*
+
+    public void dispatchTakePictureIntentWallPost(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            this.takingPhotoForWall=true;
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
     private void processPhotoDataForWallPost(Bitmap photo) {
-
-
 
 
         if (ShareDialog.canShow(ShareLinkContent.class)) {
 
             SharePhoto sharePhoto = new SharePhoto.Builder()
-                    .setBitmap(pho)
+                    .setBitmap(photo)
                     .build();
 
             SharePhotoContent photoContent = new SharePhotoContent.Builder()
-                    .addPhoto(photo)
+                    .addPhoto(sharePhoto)
                     .build();
 
             shareDialog.show(photoContent);
         }
     }
 
-*/
+
     public Uri bitmapToUriConverter(Bitmap mBitmap) {
         Uri uri = null;
         try {
@@ -159,6 +173,7 @@ public class ArexMainMenuActivity extends ActionBarActivity {
     }
 
     public void processPhotoDataForMessenger(Bitmap photo) {
+
 
 
         ShareToMessengerParams shareToMessengerParams =
