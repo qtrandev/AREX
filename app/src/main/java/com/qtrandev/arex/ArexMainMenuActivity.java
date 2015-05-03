@@ -218,7 +218,7 @@ public class ArexMainMenuActivity extends FragmentActivity {
         WebView myWebView = (WebView) findViewById(R.id.webView);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        myWebView.loadUrl("http://192.168.2.1:8888/arex/index.html");
+        myWebView.loadUrl("http://www.arex.club/app/AREX/index.html");
         myWebView.setWebViewClient(new WebViewClient());
         myWebView.getSettings().setAppCacheEnabled(false);
         myWebView.addJavascriptInterface(this,"Android");
