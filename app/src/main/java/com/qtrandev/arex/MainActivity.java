@@ -24,7 +24,7 @@ public class MainActivity extends FragmentActivity {
     private CallbackManager callbackManager;
     private Activity thisActivity;
     public boolean resumed = false;
-
+    public boolean loggedOut = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,12 +34,14 @@ public class MainActivity extends FragmentActivity {
 
         thisActivity=this;
 
+
+
         accessTokenTracker =  new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken currentToken) {
                 myToken=currentToken;
 
-                if (resumed) {
+                if ((resumed)&&(currentToken!=null)) {
                     FragmentManager manager = getSupportFragmentManager();
                     int backStackSize = manager.getBackStackEntryCount();
                     for (int i = 0; i < backStackSize; i++) {
@@ -48,17 +50,12 @@ public class MainActivity extends FragmentActivity {
                     if (currentToken != null) {
                         Intent myIntent = new Intent(thisActivity, ArexMainMenuActivity.class);
                         myIntent.putExtra("currentTok",currentToken);
-                        startActivity(myIntent);
+                        myIntent.putExtra("from", "activity1");;
+                        resumed=false;
+                        startActivityForResult(myIntent,1);
+
                     } else {
 
-                        //try logging in again
-
-                        /*
-                        Intent myIntent = new Intent(thisActivity, Arex.class);
-                        myIntent.putExtra("currentTok",currentToken);
-
-                        startActivity(myIntent);
-                        */
                     }
                 }
             }
@@ -97,6 +94,7 @@ public class MainActivity extends FragmentActivity {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
+
     }
 
     @Override
@@ -132,6 +130,12 @@ public class MainActivity extends FragmentActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        accessTokenTracker.stopTracking();
     }
 
     /**

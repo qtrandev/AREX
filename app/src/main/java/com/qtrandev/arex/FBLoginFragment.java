@@ -21,7 +21,7 @@ import com.facebook.login.widget.LoginButton;
 public class FBLoginFragment extends android.support.v4.app.Fragment{
 
 
-    private LoginButton loginButton;
+    private  LoginButton loginButton;
     private TextView skipLoginButton;
     private SkipLoginCallback skipLoginCallback;
     private CallbackManager callbackManager;
@@ -31,6 +31,7 @@ public interface SkipLoginCallback {
     void onSkipLoginPressed();
 }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_fblogin, container, false);
@@ -39,6 +40,7 @@ public interface SkipLoginCallback {
         loginButton = (LoginButton) view.findViewById(R.id.login_button);
         loginButton.setReadPermissions("user_friends");
         loginButton.setFragment(this);
+
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -62,6 +64,10 @@ public interface SkipLoginCallback {
 
         return view;
     }
+
+
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

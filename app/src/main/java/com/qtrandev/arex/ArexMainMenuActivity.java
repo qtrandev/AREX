@@ -7,11 +7,15 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -38,7 +42,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 
-public class ArexMainMenuActivity extends ActionBarActivity {
+public class ArexMainMenuActivity extends FragmentActivity {
     private ShareButton shareButton;
     private Button mRegularButton;
     private CallbackManager callbackManager;
@@ -52,6 +56,8 @@ public class ArexMainMenuActivity extends ActionBarActivity {
     private static final int REQUEST_CODE_SHARE_TO_MESSENGER = 1;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
+
+
 
 
     //Info for photo intent
@@ -106,12 +112,12 @@ public class ArexMainMenuActivity extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if((takingPhoto)&&(resultCode>0) ){
+        if((takingPhoto)&&(resultCode!=0) ){
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             this.takingPhoto=false;
             processPhotoDataForMessenger(photo);
         }
-        else if((takingPhoto)&&(resultCode>0)){
+        else if((takingPhotoForWall)&&(resultCode!=0)){
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             this.takingPhotoForWall=false;
             processPhotoDataForWallPost(photo);
@@ -145,7 +151,7 @@ public class ArexMainMenuActivity extends ActionBarActivity {
         }
     }
 
-    private void processPhotoDataForWallPost(Bitmap photo) {
+    public void processPhotoDataForWallPost(Bitmap photo) {
 
 
         if (ShareDialog.canShow(ShareLinkContent.class)) {
@@ -208,6 +214,25 @@ public class ArexMainMenuActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_arex_main_menu);
 
+
+        WebView myWebView = (WebView) findViewById(R.id.webView);
+        WebSettings webSettings = myWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        myWebView.loadUrl("http://192.168.2.1:8888/arex/index.html");
+        myWebView.setWebViewClient(new WebViewClient());
+        myWebView.getSettings().setAppCacheEnabled(false);
+        myWebView.addJavascriptInterface(this,"Android");
+
+        myWebView.setInitialScale(1);
+        myWebView.getSettings().setJavaScriptEnabled(true);
+        myWebView.getSettings().setLoadWithOverviewMode(true);
+        myWebView.getSettings().setUseWideViewPort(true);
+        myWebView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        myWebView.setScrollbarFadingEnabled(false);
+
+
+
+
         callbackManager = CallbackManager.Factory.create();
 
         //mRegularButton = (Button) findViewById(R.id.regularButton);
@@ -216,14 +241,88 @@ public class ArexMainMenuActivity extends ActionBarActivity {
         // this part is optional
         shareDialog.registerCallback(callbackManager, shareCallback);
 
+
+
+        //Adding another login button to make logout easier
+
+
+
         accessTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken,
                                                        AccessToken currentAccessToken) {
-                updateWithToken(currentAccessToken);
+                    updateWithToken(currentAccessToken);
+
             }
         };
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        accessTokenTracker.stopTracking();
+    }
+
+
+    //click methods:
+
+    @JavascriptInterface
+    public void clickShare(){
+
+        Runnable runnable = new Runnable() {
+            public void run() {
+                findViewById(R.id.share_button).performClick();
+            }
+        };
+
+        runOnUiThread(runnable);
+
+    }
+
+    @JavascriptInterface
+    public void clickLogOut(){
+
+        Runnable runnable = new Runnable() {
+            public void run() {
+
+
+            LoginManager.getInstance().logOut();
+
+            }
+        };
+
+        runOnUiThread(runnable);
+
+
+
+    }
+
+    @JavascriptInterface
+    public void clickMessenger(){
+
+        Runnable runnable = new Runnable() {
+            public void run() {
+                findViewById(R.id.regularButton).performClick();
+            }
+        };
+
+        runOnUiThread(runnable);
+    }
+
+    @JavascriptInterface
+    public void clickPostPhoto(){
+
+        Runnable runnable = new Runnable() {
+            public void run() {
+                findViewById(R.id.postphoto).performClick();
+
+            }
+        };
+
+        runOnUiThread(runnable);
+    }
+
+
 
     public void messengerClick(View view) {
         Uri uri =Uri.parse("android.resource://com.qtrandev.arex/" + R.drawable.tree);
