@@ -61,7 +61,19 @@ public class ArexMainMenuActivity extends ActionBarActivity {
     private static final int PROTOCOL_VERSION = 20150314;
     private static final String YOUR_APP_ID = "870248279704331";
     private static final int SHARE_TO_MESSENGER_REQUEST_CODE = 1;
+/*
+    @Override
 
+    public void onResume() {
+        super.onResume();
+
+
+        // Call the 'activateApp' method to log an app event for use in analytics and advertising
+        // reporting.  Do so in the onResume methods of the primary Activities that an app may be
+        // launched into.
+        AppEventsLogger.activateApp(this);
+    }
+    */
 
     private FacebookCallback<Sharer.Result> shareCallback =
             new FacebookCallback<Sharer.Result>() {
@@ -94,18 +106,20 @@ public class ArexMainMenuActivity extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if(takingPhoto){
+        if((takingPhoto)&&(resultCode>0) ){
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             this.takingPhoto=false;
             processPhotoDataForMessenger(photo);
         }
-        else if(takingPhotoForWall){
+        else if((takingPhoto)&&(resultCode>0)){
             Bitmap photo = (Bitmap) data.getExtras().get("data");
             this.takingPhotoForWall=false;
             processPhotoDataForWallPost(photo);
         }
         else
         {
+            takingPhoto=false;
+            takingPhotoForWall=false;
             super.onActivityResult(requestCode, resultCode, data);
             callbackManager.onActivityResult(requestCode, resultCode, data);
 
