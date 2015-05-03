@@ -2,20 +2,25 @@
 # Team Shark
 
 - [AREX - Augmented Reality EXperience](https://github.com/qtrandev/AREX) by Team Shark
+- Website [http://arex.club](http://arex.club)
 
 ## Description
 - Created world's augmented reality social network--Facebook AR. It's the ultimate augmented reality experience!
 
 ## Technologies used
 - Android
-- Facebook Login, Messenger API, React, Graph
-- Unity C#
+- Facebook Login, Messenger API, Graph
 - HTML5 / Javascript
-- NueroSky Mindflex API
 - Adobe Premiere, After Effects, Photoshop
 - Cannon 5D camera, green screen, lights, sound boom
-- Leap Motion augmented reality SDK
+- Augmented Reality browser
+
+## Technologies attempted
 - Kairos SDK
+- Unity C#
+- NeuroSky Mindflex API
+- Leap Motion SDK
+
 
 ## Team Shark
 
