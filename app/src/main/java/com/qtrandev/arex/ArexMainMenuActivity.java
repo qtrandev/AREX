@@ -17,7 +17,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -85,7 +84,7 @@ public class ArexMainMenuActivity extends FragmentActivity {
             new FacebookCallback<Sharer.Result>() {
                 @Override
                 public void onCancel() {
-                    Toast.makeText(ArexMainMenuActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ArexMainMenuActivity.this, "Cancelled", Toast.LENGTH_SHORT).show();
 
                 }
 
@@ -95,17 +94,17 @@ public class ArexMainMenuActivity extends FragmentActivity {
                         FacebookGraphResponseException graphError =
                                 (FacebookGraphResponseException) error;
                         if (graphError.getGraphResponse() != null) {
-                            Toast.makeText(ArexMainMenuActivity.this, "Graph Error", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(ArexMainMenuActivity.this, "Graph Error", Toast.LENGTH_SHORT).show();
 
                             return;
                         }
                     }
-                    Toast.makeText(ArexMainMenuActivity.this, "Unknown Error", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ArexMainMenuActivity.this, "Unknown Error", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onSuccess(Sharer.Result result) {
-                    Toast.makeText(ArexMainMenuActivity.this, "Worked", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ArexMainMenuActivity.this, "Worked", Toast.LENGTH_SHORT).show();
 
                 }
             };
@@ -287,7 +286,7 @@ public class ArexMainMenuActivity extends FragmentActivity {
 
 
             LoginManager.getInstance().logOut();
-
+            finish();
             }
         };
 
@@ -325,11 +324,11 @@ public class ArexMainMenuActivity extends FragmentActivity {
 
 
     public void messengerClick(View view) {
-        Uri uri =Uri.parse("android.resource://com.qtrandev.arex/" + R.drawable.tree);
+        Uri uri =Uri.parse("android.resource://com.qtrandev.arex/" + R.drawable.dolphins);
         // contentUri points to the content being shared to Messenger
         ShareToMessengerParams shareToMessengerParams =
                 ShareToMessengerParams.newBuilder(uri, "image/jpeg")
-                        .setMetaData("{ \"image\" : \"tree\" }")
+                        .setMetaData("{ \"image\" : \"dolphins\" }")
                         .build();
 
         // Sharing from an Activity
@@ -342,10 +341,10 @@ public class ArexMainMenuActivity extends FragmentActivity {
 
     private void updateWithToken(AccessToken currentAccessToken) {
         if (currentAccessToken != null) {
-            Toast.makeText(ArexMainMenuActivity.this, "new token", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(ArexMainMenuActivity.this, "new token", Toast.LENGTH_SHORT).show();
 
         } else {
-            Toast.makeText(ArexMainMenuActivity.this, "error", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(ArexMainMenuActivity.this, "error", Toast.LENGTH_SHORT).show();
 
         }
     }
@@ -354,10 +353,10 @@ public class ArexMainMenuActivity extends FragmentActivity {
 
         if (ShareDialog.canShow(ShareLinkContent.class)) {
             ShareLinkContent linkContent = new ShareLinkContent.Builder()
-                    .setContentTitle("Hello Facebook")
+                    .setContentTitle("AR Experience")
                     .setContentDescription(
-                            "[Description]")
-                    .setContentUrl(Uri.parse("http://developers.facebook.com/android"))
+                            "You have been invited!")
+                    .setContentUrl(Uri.parse("http://code.wikitude.com/dolphins1"))
                     .build();
 
             shareDialog.show(linkContent);
